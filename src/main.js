@@ -1,31 +1,42 @@
+const ul = document.querySelector('#cards-rate');
 
-const input = document.querySelector('#input-text');
-const cardsRate = document.querySelector('#cards-rate');
-const searchButton = document.querySelector('#search-button');
-
-searchButton.addEventListener('click', ()=> {
+const fetchApi = () => {
+    const input = document.querySelector('#input-text');
+    ul.innerHTML = '';
     if(!input.value) {
         alert('Você precisa passar uma moeda');
     }
-    fetch(`https://api.exchangerate.host/latest?base=${input.value}`)
+        
+    const inputValue = input.value.toUpperCase();
+    fetch(`https://api.exchangerate.host/latest?base=${inputValue}`)
         .then((res) => res.json())
         .then((data) => {
-            const arraysOfRates = Object.entries(data.rates);
-            const titleValues = document.createElement('h2');
-            titleValues.innerHTML = `Valores referentes a 1 ${data.base}`;
-            cardsRate.appendChild(titleValues);
+            const {rates, base} = data;
+            const arraysOfRates = Object.entries(rates);
 
-            arraysOfRates.map((item) => {
-                const IndividualCard = document.createElement('p');
+            const titleValues = document.createElement('h2');
+            titleValues.innerHTML = `Valores referentes a 1 ${base}`;
+            ul.appendChild(titleValues);
+
+            arraysOfRates.forEach((item) => {
+                const IndividualCard = document.createElement('li');
                 IndividualCard
                     .innerHTML = `${item[0]}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp${item[1]}`;
       
-                cardsRate.appendChild(IndividualCard);
+                ul.appendChild(IndividualCard);
             });
-
+            
         }).catch((err) => {
             console.log(err);
             alert('moeda inexistente');
         });
-});
+};
 
+
+
+const fetchCurrencies = () => {
+    const searchButton = document.querySelector('#search-button');
+    searchButton.addEventListener('click', fetchApi );
+};
+
+fetchCurrencies();
